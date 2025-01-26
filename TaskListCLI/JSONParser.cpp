@@ -94,18 +94,7 @@ bool JSONParser::jsonFileExists(const std::string& filename)
     return std::filesystem::exists(filePath);
 }
 
-void JSONParser::deleteList(const std::string& filename)
-{
-    if (filename.empty())
-        return;
 
-    if (std::remove(filename.c_str()) == 0) {
-        std::cout << "List cleared successfully.\n";
-    }
-    else {
-        std::perror("Error deleting the file.");
-    }
-}
 
 std::string JSONParser::getValue(const std::string& json, const std::string& key) const
 {

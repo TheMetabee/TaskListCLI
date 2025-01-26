@@ -2,6 +2,7 @@
 #include "Task.h"
 #include "TaskCLI.h"
 #include "JSONParser.h"
+#include "Utils.h"
 
 #include <iostream>
 
@@ -284,6 +285,6 @@ void TaskManager::list(const std::vector<std::string>& argsVec)
 
 void TaskManager::clearList(const std::vector<std::string>& argsVec)
 {
-	JSONParser jsonParser{};
-	jsonParser.deleteList(jsonFilename);
+	
+	Utils::deleteList(jsonFilename);
 }

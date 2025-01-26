@@ -16,5 +16,7 @@ private:
 	static void changeTaskStatus(const std::vector<std::string>& argsVec, Task::Status status);
 	static void list(const std::vector<std::string>& argsVec);
 	static void clearList(const std::vector<std::string>& argsVec);
+
+	static const std::string jsonFilename;
 };
 

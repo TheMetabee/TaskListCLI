@@ -2,30 +2,28 @@
 #include <fstream>
 #include <cstdio>
 #include <iostream>
-
-const std::string JSONParser::jsonFilename = "jsonTaskList.json";
+#include <sstream>
 
 std::string JSONParser::taskToJson(const Task& task)
 {
-    std::string json = "{";
-    json += "\"id\": " + std::to_string(task.getId()) + ",";
-    json += "\"description\": \"" + task.getDescription() + "\",";
-    json += "\"status\": \"" + task.getStatus() + "\",";
-    json += "\"createdAt\": \"" + task.getCreatedAt() + "\",";
-    json += "\"updatedAt\": \"" + task.getUpdatedAt() + "\"";
-    json += "}";
-    return json;
+    std::stringstream json;
+    
+    json << "{"
+        << "\"id\": " + std::to_string(task.getId()) + ","
+        << "\"description\": \"" + task.getDescription() + "\","
+        << "\"status\": \"" + task.getStatus() + "\","
+        << "\"createdAt\": \"" + task.getCreatedAt() + "\","
+        << "\"updatedAt\": \"" + task.getUpdatedAt() + "\""
+        << "}";
+    return json.str();
 }
 
 void JSONParser::saveTasksToFile(const std::vector<Task>& tasks, const std::string& filename)
 {
-    std::string _filename{};
     if (filename.empty())
-        _filename = JSONParser::jsonFilename;
-    else
-        _filename = _filename;
+        return;
 
-    std::ofstream file(_filename);
+    std::ofstream file(filename);
     file << "[\n";
     for (size_t i = 0; i < tasks.size(); ++i) {
         file << taskToJson(tasks[i]);
@@ -89,16 +87,13 @@ Task JSONParser::jsonToTask(const std::string& json)
 
 std::vector<Task> JSONParser::loadTasksFromFile(const std::string& filename)
 {
-    std::string _filename{};
     if (filename.empty())
-        _filename = JSONParser::jsonFilename;
-    else
-        _filename = _filename;
+        return std::vector<Task>();
 
-    std::ifstream file(_filename);
+    std::ifstream file(filename);
 
     if (!file.is_open()) {
-        throw std::runtime_error("Could not open file: " + _filename);
+        throw std::runtime_error("Could not open file: " + filename);
     }
 
     std::string json((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
@@ -128,13 +123,10 @@ std::vector<Task> JSONParser::loadTasksFromFile(const std::string& filename)
 
 bool JSONParser::jsonFileExists(const std::string& filename)
 {
-    std::string _filename{};
     if (filename.empty())
-        _filename = JSONParser::jsonFilename;
-    else
-        _filename = _filename;
+        return false;
 
-    std::ifstream file(_filename);
+    std::ifstream file(filename);
 
     if (file.fail()) {
         return false;
@@ -145,13 +137,10 @@ bool JSONParser::jsonFileExists(const std::string& filename)
 
 void JSONParser::deleteList(const std::string& filename)
 {
-    std::string _filename{};
     if (filename.empty())
-        _filename = JSONParser::jsonFilename;
-    else
-        _filename = _filename;
+        return;
 
-    if (std::remove(_filename.c_str()) == 0) {
+    if (std::remove(filename.c_str()) == 0) {
         std::cout << "List cleared successfully.\n";
     }
     else {

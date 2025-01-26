@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+const std::string TaskManager::jsonFilename = "jsonTaskList.json";
+
 void TaskManager::queryCommand(const std::vector<std::string>& argsVec)
 {
 	try {
@@ -52,7 +54,7 @@ void TaskManager::addTask(const std::vector<std::string>& argsVec)
 
 	//check if file exists. If it does, load tasks
 	if (JSONParser::jsonFileExists()) {
-		auto tasks = JSONParser::loadTasksFromFile();
+		auto tasks = JSONParser::loadTasksFromFile(jsonFilename);
 
 		//get largest id from tasks to set new task 1 higher 
 		int largestId = 0;
@@ -109,7 +111,7 @@ void TaskManager::updateTask(const std::vector<std::string>& argsVec)
 		return;
 	}
 
-	auto tasks = JSONParser::loadTasksFromFile();
+	auto tasks = JSONParser::loadTasksFromFile(jsonFilename);
 
 	if (tasks.empty()) {
 		std::cout << "Task list is empty. Nothing to update." << std::endl;
@@ -157,7 +159,7 @@ void TaskManager::deleteTask(const std::vector<std::string>& argsVec)
 		return;
 	}
 
-	auto tasks = JSONParser::loadTasksFromFile();
+	auto tasks = JSONParser::loadTasksFromFile(jsonFilename);
 
 	if (tasks.empty()) {
 		std::cout << "Task list is empty. Nothing to update." << std::endl;
@@ -203,7 +205,7 @@ void TaskManager::changeTaskStatus(const std::vector<std::string>& argsVec, Task
 		return;
 	}
 
-	auto tasks = JSONParser::loadTasksFromFile();
+	auto tasks = JSONParser::loadTasksFromFile(jsonFilename);
 
 	if (tasks.empty()) {
 		std::cout << "Task list is empty. Nothing to update." << std::endl;
@@ -244,7 +246,7 @@ void TaskManager::list(const std::vector<std::string>& argsVec)
 		return;
 	}
 
-	auto tasks = JSONParser::loadTasksFromFile();
+	auto tasks = JSONParser::loadTasksFromFile(jsonFilename);
 
 	if (tasks.empty()) {
 		std::cout << "Task list is empty. Nothing to show." << std::endl;

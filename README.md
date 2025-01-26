@@ -30,4 +30,4 @@ Example commands:
 ```task-cli.exe clear```
 
 # Building
-This was built using VS 2022 with C++ 14. It's only 14 cause I used a lambda but that could easily be replaced with a C++ 11 version if I felt like it. 
+This was built using VS 2022 with C++ 17. 

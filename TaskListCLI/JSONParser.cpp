@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <iostream>
 #include <sstream>
+#include <filesystem>
 
 std::string JSONParser::taskToJson(const Task& task)
 {
@@ -88,13 +89,9 @@ bool JSONParser::jsonFileExists(const std::string& filename)
     if (filename.empty())
         return false;
 
-    std::ifstream file(filename);
+    std::filesystem::path filePath{ filename };
 
-    if (file.fail()) {
-        return false;
-    }
-
-    return true;
+    return std::filesystem::exists(filePath);
 }
 
 void JSONParser::deleteList(const std::string& filename)

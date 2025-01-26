@@ -7,12 +7,15 @@
 class JSONParser
 {
 public:
-	static std::string taskToJson(const Task& task);
-	static void saveTasksToFile(const std::vector<Task>& tasks, const std::string& filename = "");
-	static Task jsonToTask(const std::string& json);
-	static std::vector<Task> loadTasksFromFile(const std::string& filename);
-	static bool jsonFileExists(const std::string& filename = "");
-	static void deleteList(const std::string& filename = "");
+	std::string taskToJson(const Task& task);
+	void saveTasksToFile(const std::vector<Task>& tasks, const std::string& filename);
+	Task jsonToTask(const std::string& json);
+	std::vector<Task> loadTasksFromFile(const std::string& filename);
+	bool jsonFileExists(const std::string& filename);
+	void deleteList(const std::string& filename);
+
+private:
+	std::string getValue(const std::string& json, const std::string& key) const;
 
 };
 

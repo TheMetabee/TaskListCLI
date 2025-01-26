@@ -33,6 +33,7 @@ void TaskManager::queryCommand(const std::vector<std::string>& argsVec)
 			break;
 		case TaskCLI::Command::LIST:
 			TaskManager::list(argsVec);
+			break;
 		case TaskCLI::Command::CLEAR:
 			TaskManager::clearList(argsVec);
 			break;
@@ -52,9 +53,11 @@ void TaskManager::addTask(const std::vector<std::string>& argsVec)
 
 	std::string description = argsVec[2];
 
+	JSONParser jsonParser{};
+
 	//check if file exists. If it does, load tasks
-	if (JSONParser::jsonFileExists()) {
-		auto tasks = JSONParser::loadTasksFromFile(jsonFilename);
+	if (jsonParser.jsonFileExists(jsonFilename)) {
+		auto tasks = jsonParser.loadTasksFromFile(jsonFilename);
 
 		//get largest id from tasks to set new task 1 higher 
 		int largestId = 0;
@@ -67,7 +70,7 @@ void TaskManager::addTask(const std::vector<std::string>& argsVec)
 		
 		//add task to vector and save back to file
 		tasks.push_back(newTask);
-		JSONParser::saveTasksToFile(tasks);
+		jsonParser.saveTasksToFile(tasks, jsonFilename);
 		std::cout << "Added new task:\n" << newTask << std::endl;
 	}
 	else {
@@ -78,7 +81,7 @@ void TaskManager::addTask(const std::vector<std::string>& argsVec)
 		
 		//add task to vector and save back to file
 		tasks.push_back(newTask);
-		JSONParser::saveTasksToFile(tasks);
+		jsonParser.saveTasksToFile(tasks, jsonFilename);
 		std::cout << "Added new task:\n" << newTask << std::endl;
 	}
 }
@@ -106,12 +109,14 @@ void TaskManager::updateTask(const std::vector<std::string>& argsVec)
 	std::string description = argsVec[3];
 
 	//check if file exists. if not, this is invalid
-	if (!JSONParser::jsonFileExists) {
+	JSONParser jsonParser{};
+
+	if (!jsonParser.jsonFileExists(jsonFilename)) {
 		std::cout << "Task list is empty. Nothing to update." << std::endl;
 		return;
 	}
 
-	auto tasks = JSONParser::loadTasksFromFile(jsonFilename);
+	auto tasks = jsonParser.loadTasksFromFile(jsonFilename);
 
 	if (tasks.empty()) {
 		std::cout << "Task list is empty. Nothing to update." << std::endl;
@@ -125,7 +130,7 @@ void TaskManager::updateTask(const std::vector<std::string>& argsVec)
 		if (task.getId() == id) {
 			found = true;
 			task.setDescription(description);
-			JSONParser::saveTasksToFile(tasks);
+			jsonParser.saveTasksToFile(tasks, jsonFilename);
 			std::cout << "Task successfully updated (ID: " << id << ")\n";
 			std::cout << task << std::endl;
 			break;
@@ -154,12 +159,15 @@ void TaskManager::deleteTask(const std::vector<std::string>& argsVec)
 	}
 
 	//check if file exists. if not, this is invalid
-	if (!JSONParser::jsonFileExists) {
+	JSONParser jsonParser{};
+
+	if (!jsonParser.jsonFileExists(jsonFilename)) {
 		std::cout << "Task list is empty. Nothing to delete." << std::endl;
 		return;
 	}
 
-	auto tasks = JSONParser::loadTasksFromFile(jsonFilename);
+	
+	auto tasks = jsonParser.loadTasksFromFile(jsonFilename);
 
 	if (tasks.empty()) {
 		std::cout << "Task list is empty. Nothing to update." << std::endl;
@@ -173,7 +181,7 @@ void TaskManager::deleteTask(const std::vector<std::string>& argsVec)
 		if (it->getId() == id) {
 			found = true;
 			tasks.erase(it);
-			JSONParser::saveTasksToFile(tasks);
+			jsonParser.saveTasksToFile(tasks, jsonFilename);
 			std::cout << "Task was successfully deleted (ID: " << id << ")\n";
 			break;
 		}
@@ -199,13 +207,16 @@ void TaskManager::changeTaskStatus(const std::vector<std::string>& argsVec, Task
 		return;
 	}
 
+	JSONParser jsonParser{};
+
 	//check if file exists. if not, this is invalid
-	if (!JSONParser::jsonFileExists) {
+	if (!jsonParser.jsonFileExists(jsonFilename)) {
 		std::cout << "Task list is empty. Nothing to update." << std::endl;
 		return;
 	}
 
-	auto tasks = JSONParser::loadTasksFromFile(jsonFilename);
+	
+	auto tasks = jsonParser.loadTasksFromFile(jsonFilename);
 
 	if (tasks.empty()) {
 		std::cout << "Task list is empty. Nothing to update." << std::endl;
@@ -217,7 +228,7 @@ void TaskManager::changeTaskStatus(const std::vector<std::string>& argsVec, Task
 		if (it->getId() == id) {
 			found = true;
 			it->setStatus(status);
-			JSONParser::saveTasksToFile(tasks);
+			jsonParser.saveTasksToFile(tasks, jsonFilename);
 			std::cout << "Task set to " << it->statusToString() << " (ID: " << id << ")\n";
 			std::cout << *it << std::endl;
 			break;
@@ -240,13 +251,16 @@ void TaskManager::list(const std::vector<std::string>& argsVec)
 		statusStr = argsVec[2];
 	}
 
+	JSONParser jsonParser{};
+
 	//check if file exists. if not, this is invalid
-	if (!JSONParser::jsonFileExists) {
+	if (!jsonParser.jsonFileExists(jsonFilename)) {
 		std::cout << "Task list is empty. Nothing to show." << std::endl;
 		return;
 	}
 
-	auto tasks = JSONParser::loadTasksFromFile(jsonFilename);
+	
+	auto tasks = jsonParser.loadTasksFromFile(jsonFilename);
 
 	if (tasks.empty()) {
 		std::cout << "Task list is empty. Nothing to show." << std::endl;
@@ -255,14 +269,14 @@ void TaskManager::list(const std::vector<std::string>& argsVec)
 
 	if (status == Task::Status::NONE) {
 		for (auto& task : tasks) {
-			std::cout << JSONParser::taskToJson(task) << std::endl;
+			std::cout << jsonParser.taskToJson(task) << std::endl;
 		}
 	}
 	else {
 
 		for (auto& task : tasks) {
 			if(task.getStatus() == statusStr)
-				std::cout << JSONParser::taskToJson(task) << std::endl;
+				std::cout << jsonParser.taskToJson(task) << std::endl;
 		}
 	}
 	
@@ -270,5 +284,6 @@ void TaskManager::list(const std::vector<std::string>& argsVec)
 
 void TaskManager::clearList(const std::vector<std::string>& argsVec)
 {
-	JSONParser::deleteList();
+	JSONParser jsonParser{};
+	jsonParser.deleteList(jsonFilename);
 }

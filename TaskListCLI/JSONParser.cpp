@@ -36,44 +36,6 @@ void JSONParser::saveTasksToFile(const std::vector<Task>& tasks, const std::stri
 
 Task JSONParser::jsonToTask(const std::string& json)
 {
-
-    auto getValue = [](const std::string& json, const std::string& key) -> std::string {
-        size_t keyPos = json.find("\"" + key + "\"");
-        if (keyPos == std::string::npos) {
-            throw std::runtime_error("Key \"" + key + "\" not found in JSON.");
-        }
-
-        size_t colonPos = json.find(":", keyPos);
-        if (colonPos == std::string::npos) {
-            throw std::runtime_error("No colon found after key \"" + key + "\".");
-        }
-
-        // Find the start of the value, skipping whitespace and quotes
-        size_t start = json.find_first_not_of(" \t\n\r", colonPos + 1);
-
-        if (start == std::string::npos) {
-            throw std::runtime_error("Value for key \"" + key + "\" not found.");
-        }
-
-        // Determine if it's a quoted string
-        if (json[start] == '"') {
-            // Find the closing quote for the string
-            size_t end = json.find('"', start + 1);
-            if (end == std::string::npos) {
-                throw std::runtime_error("Unterminated string value for key \"" + key + "\".");
-            }
-            return json.substr(start + 1, end - start - 1); // Extract value without quotes
-        }
-        else {
-            // If not a string, find the next comma or closing brace
-            size_t end = json.find_first_of(",}", start);
-            if (end == std::string::npos) {
-                throw std::runtime_error("Malformed JSON: Couldn't find end of value for key \"" + key + "\".");
-            }
-            return json.substr(start, end - start); // Extract raw value
-        }
-        };
-
     Task task = {
         std::stoi(getValue(json, "id")),            // Parse "id" as integer
         getValue(json, "description"),             // Parse "description" as string
@@ -145,6 +107,44 @@ void JSONParser::deleteList(const std::string& filename)
     }
     else {
         std::perror("Error deleting the file.");
+    }
+}
+
+std::string JSONParser::getValue(const std::string& json, const std::string& key) const
+{
+    size_t keyPos = json.find("\"" + key + "\"");
+    if (keyPos == std::string::npos) {
+        throw std::runtime_error("Key \"" + key + "\" not found in JSON.");
+    }
+
+    size_t colonPos = json.find(":", keyPos);
+    if (colonPos == std::string::npos) {
+        throw std::runtime_error("No colon found after key \"" + key + "\".");
+    }
+
+    // Find the start of the value, skipping whitespace and quotes
+    size_t start = json.find_first_not_of(" \t\n\r", colonPos + 1);
+
+    if (start == std::string::npos) {
+        throw std::runtime_error("Value for key \"" + key + "\" not found.");
+    }
+
+    // Determine if it's a quoted string
+    if (json[start] == '"') {
+        // Find the closing quote for the string
+        size_t end = json.find('"', start + 1);
+        if (end == std::string::npos) {
+            throw std::runtime_error("Unterminated string value for key \"" + key + "\".");
+        }
+        return json.substr(start + 1, end - start - 1); // Extract value without quotes
+    }
+    else {
+        // If not a string, find the next comma or closing brace
+        size_t end = json.find_first_of(",}", start);
+        if (end == std::string::npos) {
+            throw std::runtime_error("Malformed JSON: Couldn't find end of value for key \"" + key + "\".");
+        }
+        return json.substr(start, end - start); // Extract raw value
     }
 }
 

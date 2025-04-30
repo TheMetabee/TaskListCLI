@@ -30,4 +30,4 @@ Example commands:
 ```task-cli.exe clear```
 
 # Building
-This was built using VS 2022 with C++ 17. 
+This was built using VS 2022 with C++ 17. (*)
